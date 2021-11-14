@@ -1,6 +1,10 @@
 # passport-demo
 Demo of the passport.js framework. Allows the registration of new users. Registered user can then use the login form to access content that is restricted to registered users.
 
+This demo is based on:
+- [Express Tutorial](https://www.youtube.com/watch?v=L72fhGm1tfE)
+- [Passport Tutorial](https://www.youtube.com/watch?v=-RCnNyD0L-s)
+
 ## Requirements
 This app uses express.js, passport.js and ejs views.
 

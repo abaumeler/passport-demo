@@ -1,12 +1,15 @@
-var  mongoose = require('mongoose');
-var crypto = require('crypto');
+const mongoose = require('mongoose');
+const uniqueValidator = require('mongoose-unique-validator');
+const crypto = require('crypto');
 
-var UserSchema = new mongoose.Schema({
-    name: String,
-    email: String,
+const UserSchema = new mongoose.Schema({
+    name: {type: String, lowercase: true, required: [true, "can't be blank"], match: [/^[a-zA-Z0-9]+$/, 'is invalid']},
+    email: {type: String, lowercase: true, unique: true, required: [true, "can't be blank"], match: [/\S+@\S+\.\S+/, 'is invalid'], index: true},
     hash: String,
     salt: String
 });
+
+UserSchema.plugin(uniqueValidator, {message: 'is already taken.'});
 
 UserSchema.methods.setPassword = function(password){
     this.salt = crypto.randomBytes(16).toString('hex');
