@@ -45,20 +45,20 @@ app.post('/register', upload.none(), (req, res, next) => {
 app.post('/login', upload.none(), function(req, res, next){
     console.log(req.body);
     if(!req.body.email){
-      return res.status(422).json({errors: {email: "can't be blank"}});
+      return res.status(422).render('./login.ejs',{errors: "email: can't be blank"});
     }
   
     if(!req.body.password){
-      return res.status(422).json({errors: {password: "can't be blank"}});
+      return res.status(422).render('./login.ejs',{errors:  "password can't be blank"});
     }
   
-    passport.authenticate('local', {session: false}, function(err, user, info){
+    passport.authenticate('local', {session: false, failureFlash: true}, function(err, user, info){
       if(err){ return next(err); }
-  
+      
       if(user){
         return res.render('./index.ejs',{name: user.name});
       } else {
-        return res.status(422).json(info);
+        return res.render('./login.ejs',{errors: "invalid credentials"});
       }
     })(req, res, next);
 });
