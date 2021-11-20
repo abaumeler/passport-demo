@@ -7,8 +7,8 @@ let User = mongoose.model('User');
 // if the user exists verify the password
 // if password is correct, return user
 passport.use(new LocalStrategy({
-  usernameField: 'email',
-  passwordField: 'password'
+  usernameField: 'user[email]',
+  passwordField: 'user[password]'
 }, (email, password, done) => {
   User.findOne({ email: email }).then(user => {
     if (!user || !user.validPassword(password)) {
