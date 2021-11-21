@@ -42,7 +42,6 @@ app.get('/user', auth.required, (req, res, next) => {
 
 app.post('/register', (req, res, next) => {
   let user = new User();
-  console.log(req)
   user.name = req.body.user.name;
   user.email = req.body.user.email;
   user.setPassword(req.body.user.password);
