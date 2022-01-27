@@ -3,9 +3,10 @@ const bcrypt = require('bcrypt')
 const mongoose = require('mongoose')
 const passport = require('passport');
 const auth = require('./middleware/auth');
+const env = require('dotenv').config();
 
 // Mongo DB Setup
-mongoose.connect('mongodb://localhost:27017/passport-demo')
+mongoose.connect('mongodb+srv://'+process.env.MONGODB_USER+':'+process.env.MONGODB_PW+'@db-mongodb-fra1-25982-d954fc61.mongo.ondigitalocean.com/passport-demo?authSource=admin&replicaSet=db-mongodb-fra1-25982&tls=true&tlsCAFile=ca-certificate.crt.txt')
 mongoose.set('debug', true);
 
 require('./models/User')
@@ -92,4 +93,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(3000);
+app.listen(process.env.PORT);
