@@ -14,34 +14,13 @@ let User = mongoose.model('User');
 
 // Create global Express JS app object
 const app = express();
-app.set('views', './views');
-app.set('view-engine', 'ejs');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 require('./config/passport-config');
 
 // Route handling
-app.get('/', (req, res) => {
-  console.log('get /');
-  console.log(req);
-  res.redirect('/login');
-});
-
-app.get('/login', (req, res) => {
-  console.log('get /login');
-  console.log(req);
-  res.render('login.ejs');
-});
-
-app.get('/register', (req, res) => {
-  console.log('get /register');
-  console.log(req);
-  res.render('register.ejs');
-});
-
 app.get('/user', auth.required, (req, res, next) => {
   console.log('get /user');
-  console.log(req);
   User.findById(req.payload.id).then((user) => {
     if (!user) { return res.sendStatus(401); }
 
@@ -51,7 +30,6 @@ app.get('/user', auth.required, (req, res, next) => {
 
 app.post('/register', (req, res, next) => {
   console.log('post /register');
-  console.log(req);
   let user = new User();
   user.name = req.body.user.name;
   user.email = req.body.user.email;
@@ -63,7 +41,6 @@ app.post('/register', (req, res, next) => {
 
 app.post('/login', (req, res, next) =>{
   console.log('post /login');
-  console.log(req);
   if(!req.body.user.email){
     return res.status(422).json({errors: {email: "can't be blank"}});
   }
@@ -105,4 +82,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(process.env.PORT, '0.0.0.0');
+app.listen(process.env.PORT);
