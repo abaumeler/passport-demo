@@ -4,6 +4,19 @@ const mongoose = require('mongoose')
 const passport = require('passport');
 const auth = require('./middleware/auth');
 const env = require('dotenv').config();
+let runmode
+
+const arguments = process.argv.slice(2);
+if(arguments[0] === 'dev'){
+  runmode = 'dev';
+  console.log('running in development mode');
+}else if(arguments[0] === 'prod'){
+  runmode = 'prod';
+  console.log('running in production mode');
+}else{
+  console.log('provide run mode (dev|prod)');
+  process.exit(0);
+}
 
 // Mongo DB Setup
 mongoose.connect('mongodb+srv://'+process.env.MONGODB_USER+':'+process.env.MONGODB_PW+'@db-mongodb-fra1-25982-d954fc61.mongo.ondigitalocean.com/passport-demo?authSource=admin&replicaSet=db-mongodb-fra1-25982&tls=true&tlsCAFile=ca-certificate.crt.txt')
