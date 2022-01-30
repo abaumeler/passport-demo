@@ -9,18 +9,26 @@ let runmode
 const arguments = process.argv.slice(2);
 if(arguments[0] === 'dev'){
   runmode = 'dev';
-  console.log('running in development mode');
+  console.log('server running in development mode');
 }else if(arguments[0] === 'prod'){
   runmode = 'prod';
-  console.log('running in production mode');
+  console.log('server running in production mode');
 }else{
   console.log('provide run mode (dev|prod)');
   process.exit(0);
 }
 
 // Mongo DB Setup
-mongoose.connect('mongodb+srv://'+process.env.MONGODB_USER+':'+process.env.MONGODB_PW+'@db-mongodb-fra1-25982-d954fc61.mongo.ondigitalocean.com/passport-demo?authSource=admin&replicaSet=db-mongodb-fra1-25982&tls=true&tlsCAFile=ca-certificate.crt.txt')
-mongoose.set('debug', true);
+if(runmode === 'prod'){
+  mongoose.connect('mongodb+srv://'+process.env.MONGODB_USER+':'+process.env.MONGODB_PW+'@db-mongodb-fra1-25982-d954fc61.mongo.ondigitalocean.com/passport-demo?authSource=admin&replicaSet=db-mongodb-fra1-25982&tls=true&tlsCAFile=ca-certificate.crt.txt');
+  mongoose.set('debug', false);
+}
+
+if (runmode == 'dev'){
+  mongoose.connect('mongodb://localhost:27017/passport-demo')
+  mongoose.set('debug', true);
+}
+
 
 require('./models/User')
 let User = mongoose.model('User');
@@ -95,4 +103,13 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(process.env.PORT);
+switch (runmode){
+  case 'dev':
+   console.log('server listening on Port: 3000');
+   app.listen(3000);
+   break;
+  case 'prod':
+    console.log('server listening on Port: '+process.env.PORT);
+    app.listen(process.env.PORT);
+    break;
+}
