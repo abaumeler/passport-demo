@@ -49,6 +49,11 @@ app.get('/user', auth.required, (req, res, next) => {
   }).catch(next);
 });
 
+app.get('/test', (req, res, next) => {
+  console.log('get /test');
+  return res.json('test: testData');
+});
+
 app.post('/register', (req, res, next) => {
   console.log('post /register');
   let user = new User();
