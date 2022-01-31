@@ -50,6 +50,7 @@ switch (runmode){
   case 'dev':
    //allow all origins in dev mode
    app.use(cors());
+   app.options('*', cors()); //enable preflight for all
    break;
   case 'prod':
    app.use(cors(corsOptions));
@@ -62,7 +63,6 @@ app.get('/user', auth.required, (req, res, next) => {
   console.log('get /user');
   User.findById(req.payload.id).then((user) => {
     if (!user) { return res.sendStatus(401); }
-
     return res.json({ user: user.toAuthJSON() });
   }).catch(next);
 });
