@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const passport = require('passport');
 const auth = require('./middleware/auth');
 const env = require('dotenv').config();
+const cors = require('cors')
 let runmode
 
 const arguments = process.argv.slice(2);
@@ -18,16 +19,22 @@ if(arguments[0] === 'dev'){
   process.exit(0);
 }
 
+const corsOptions = {
+  origin: 'http://example.com',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+
 // Mongo DB Setup
 if(runmode === 'prod'){
   mongoose.connect('mongodb+srv://'+process.env.MONGODB_USER+':'+process.env.MONGODB_PW+'@db-mongodb-fra1-25982-d954fc61.mongo.ondigitalocean.com/passport-demo?authSource=admin&replicaSet=db-mongodb-fra1-25982&tls=true&tlsCAFile=ca-certificate.crt.txt');
   mongoose.set('debug', false);
 }
 
-if (runmode == 'dev'){
+if (runmode === 'dev'){
   mongoose.connect('mongodb://localhost:27017/passport-demo')
   mongoose.set('debug', true);
 }
+
 
 
 require('./models/User')
@@ -38,6 +45,17 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 require('./config/passport-config');
+
+switch (runmode){
+  case 'dev':
+   //allow all origins in dev mode
+   app.use(cors());
+   break;
+  case 'prod':
+   app.use(cors(corsOptions));
+   break;
+}
+
 
 // Route handling
 app.get('/user', auth.required, (req, res, next) => {
@@ -67,6 +85,7 @@ app.post('/register', (req, res, next) => {
 
 app.post('/login', (req, res, next) =>{
   console.log('post /login');
+  console.log(req.body);
   if(!req.body.user.email){
     return res.status(422).json({errors: {email: "can't be blank"}});
   }
