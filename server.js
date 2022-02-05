@@ -1,9 +1,5 @@
 const express = require('express')
-const bcrypt = require('bcrypt')
 const mongoose = require('mongoose')
-const passport = require('passport');
-const auth = require('./middleware/auth');
-const env = require('dotenv').config();
 const cors = require('cors')
 let runmode
 
@@ -19,32 +15,32 @@ if(arguments[0] === 'dev'){
   process.exit(0);
 }
 
-const corsOptions = {
-  origin: 'http://example.com',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+// Mongo DB Setup based on runmode
+switch(runmode){
+  case 'dev':
+    mongoose.connect('mongodb://localhost:27017/passport-demo')
+    mongoose.set('debug', true);
+    break;
+  case 'prod':
+    mongoose.connect('mongodb+srv://'+process.env.MONGODB_USER+':'+process.env.MONGODB_PW+'@db-mongodb-fra1-25982-d954fc61.mongo.ondigitalocean.com/passport-demo?authSource=admin&replicaSet=db-mongodb-fra1-25982&tls=true&tlsCAFile=ca-certificate.crt.txt');
+    mongoose.set('debug', false);
+    break;
 }
 
-// Mongo DB Setup
-if(runmode === 'prod'){
-  mongoose.connect('mongodb+srv://'+process.env.MONGODB_USER+':'+process.env.MONGODB_PW+'@db-mongodb-fra1-25982-d954fc61.mongo.ondigitalocean.com/passport-demo?authSource=admin&replicaSet=db-mongodb-fra1-25982&tls=true&tlsCAFile=ca-certificate.crt.txt');
-  mongoose.set('debug', false);
-}
-
-if (runmode === 'dev'){
-  mongoose.connect('mongodb://localhost:27017/passport-demo')
-  mongoose.set('debug', true);
-}
-
-
-
-require('./models/User')
-let User = mongoose.model('User');
+// Database Models
+require('./models/User');
 
 // Create global Express JS app object
 const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 require('./config/passport-config');
+
+// Configure CORS based on runmode
+const corsOptions = {
+  origin: 'http://example.com',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
 
 switch (runmode){
   case 'dev':
@@ -57,54 +53,8 @@ switch (runmode){
    break;
 }
 
-
 // Route handling
-app.get('/user', auth.required, (req, res, next) => {
-  console.log('get /user');
-  User.findById(req.payload.id).then((user) => {
-    if (!user) { return res.sendStatus(401); }
-    return res.json({ user: user.toAuthJSON() });
-  }).catch(next);
-});
-
-app.get('/test', (req, res, next) => {
-  console.log('get /test');
-  return res.json('test: testData');
-});
-
-app.post('/register', (req, res, next) => {
-  console.log('post /register');
-  let user = new User();
-  user.name = req.body.user.name;
-  user.email = req.body.user.email;
-  user.setPassword(req.body.user.password);
-  user.save().then(function () {
-    return res.json(user.toAuthJSON());
-  }).catch(next);
-});
-
-app.post('/login', (req, res, next) =>{
-  console.log('post /login');
-  console.log(req.body);
-  if(!req.body.user.email){
-    return res.status(422).json({errors: {email: "can't be blank"}});
-  }
-
-  if(!req.body.user.password){
-    return res.status(422).json({errors: {password: "can't be blank"}});
-  }
-
-  passport.authenticate('local', {session: false}, function(err, user, info){
-    if(err){ return next(err); }
-
-    if(user){
-      user.token = user.generateJWT();
-      return res.json({user: user.toAuthJSON()});
-    } else {
-      return res.status(422).json(info);
-    }
-  })(req, res, next);
-});
+app.use(require('./routes'));
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
