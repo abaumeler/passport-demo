@@ -50,6 +50,7 @@ switch (runmode){
    break;
   case 'prod':
    app.use(cors(corsOptions));
+   app.options('*', cors());
    break;
 }
 
