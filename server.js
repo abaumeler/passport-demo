@@ -1,7 +1,7 @@
-const express = require('express')
-const mongoose = require('mongoose')
-const cors = require('cors')
-let runmode
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+let runmode;
 
 const arguments = process.argv.slice(2);
 if(arguments[0] === 'dev'){
@@ -38,7 +38,7 @@ require('./config/passport-config');
 
 // Configure CORS based on runmode
 const corsOptions = {
-  origin: 'http://example.com',
+  origin: 'https://react-demo-rnylu.ondigitalocean.app/',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
@@ -88,9 +88,9 @@ app.use(function(err, req, res, next) {
 
 switch (runmode){
   case 'dev':
-   console.log('server listening on Port: 3000');
-   app.listen(3000);
-   break;
+    console.log('server listening on Port: 3000');
+    app.listen(3000);
+    break;
   case 'prod':
     console.log('server listening on Port: '+process.env.PORT);
     app.listen(process.env.PORT);
