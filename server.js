@@ -38,7 +38,7 @@ require('./config/passport-config');
 
 // Configure CORS based on runmode
 const corsOptions = {
-  origin: 'https://passport-demo-i24vc.ondigitalocean.app/api/*',
+  origin: 'https://react-demo-rnylu.ondigitalocean.app',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
