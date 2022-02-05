@@ -63,18 +63,27 @@ app.use((req, res, next) => {
   next(err);
 });
 
-// Error handlers
-app.use((err, req, res, next) => {
-  console.log(err.stack);
-
-  res.status(err.status || 500);
-
-  res.json({
-    'errors': {
-      message: err.message,
-      error: err
-    }
+// Error handler for development
+if(runmode === 'dev'){
+  app.use((err, req, res, next) => {
+    console.log(err.stack);
+    res.status(err.status || 500);
+    res.json({
+      'errors': {
+        message: err.message,
+        error: err
+      }
+    });
   });
+}
+
+// Production error handler
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.json({'errors': {
+    message: err.message,
+    error: {}
+  }});
 });
 
 switch (runmode){
