@@ -38,7 +38,7 @@ require('./config/passport-config');
 
 // Configure CORS based on runmode
 const corsOptions = {
-  origin: 'https://react-demo-rnylu.ondigitalocean.app',
+  origin: 'https://eat.baumeler.dev',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
